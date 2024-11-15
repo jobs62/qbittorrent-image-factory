@@ -1,0 +1,42 @@
+package:
+  name: qt6-qttools
+  version: 6.8.0
+  epoch: 0
+  description: "Qt Tools"
+  target-architecture:
+    - all
+  dependencies:
+    runtime: []
+
+environment:
+  contents:
+    repositories:
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - wolfi-base
+      - build-base
+      - busybox
+      - cmake
+      - git
+      - ninja-build
+      - qt6-qtbase-dev
+
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/qt/qttools.git
+      tag: v${{package.version}}
+      expected-commit: 3dd2b6ad0dd1a0480628b4cc74cb7b89a89e4a61
+      recurse-submodules: true
+
+  - uses: cmake/configure
+    with:
+      opts: '-G Ninja'
+
+  - uses: cmake/build
+  
+  - uses: cmake/install
+
+  - uses: strip

@@ -1,0 +1,54 @@
+package:
+  name: qbittorrent
+  version: 5.0.1
+  epoch: 0
+  description: "qBittorrent BitTorrent client"
+  target-architecture:
+    - all
+  dependencies:
+    runtime: []
+
+environment:
+  contents:
+    repositories:
+      - https://packages.wolfi.dev/os
+      - '@local ./packages'
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - wolfi-base
+      - build-base
+      - ca-certificates-bundle 
+      - busybox
+      - cmake
+      - curl
+      - git
+      - linux-headers
+      - ninja-build
+      - python3
+      - re2c
+      - zlib-dev
+      - icu-dev
+      - openssl-dev
+      - qt6-qtbase-dev
+      - boost-dev
+      - libtorrent-dev@local
+      - qt6-qttools@local
+
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/qbittorrent/qBittorrent.git
+      tag: release-5.0.1
+      expected-commit: 94136262a84293da0d8504724e7143df0d0baa12
+      recurse-submodules: true
+
+  - uses: cmake/configure
+    with:
+      opts: '-D CMAKE_CXX_STANDARD=20 -D GUI=OFF -G Ninja'
+
+  - uses: cmake/build
+
+  - uses: cmake/install
+
+  - uses: strip

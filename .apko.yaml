@@ -1,0 +1,21 @@
+contents:
+  repositories:
+    - https://packages.wolfi.dev/os
+    - '@local ./packages'
+  keyring:
+    - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+  packages:
+    - wolfi-base
+    - ca-certificates-bundle 
+    - qbittorrent@local
+
+entrypoint:
+  command: "/usr/bin/qbittorrent-nox"
+
+accounts:
+  groups:
+    - groupname: qbittorrent
+      gid: 10000
+  users:
+    - username: qbittorrent
+      uid: 10000
