@@ -35,16 +35,17 @@ jobs:
           signing-key-path: ${{ github.workspace }}/melange.rsa
       - uses: chainguard-dev/actions/melange-build-pkg@main
         with:
-          keyring-append: ${{ github.workspace }}/melange.rsa.pub
           multi-config: "libtorrent.yaml,qt6-qttools.yaml,qbittorrent.yaml"
+          sign-with-key: ${{ github.workspace }}/melange.rsa
           signing-key-path: ${{ github.workspace }}/melange.rsa
           empty-workspace: true
+          repository-path: ${{ github.workspace }}/packages
 
       - uses: chainguard-dev/actions/apko-build@main
         id: apko
         with:
           archs: x86_64
-          keyring-append: /github/workspace/melange.rsa.pub
+          keyring-append: ${{ github.workspace }}/melange.rsa.pub
           tag: ghcr.io/${{ github.repository }}:latest
           source-date-epoch: ${{ steps.snapshot-date.outputs.epoch }}
 
