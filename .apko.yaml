@@ -1,7 +1,7 @@
 contents:
   repositories:
     - https://packages.wolfi.dev/os
-    - '@local ./packages'
+    - '@local /github/workspace/packages'
   keyring:
     - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
   packages:

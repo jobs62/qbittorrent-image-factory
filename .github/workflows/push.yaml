@@ -1,0 +1,53 @@
+name: Build action
+
+on: 
+  push:
+  schedule:
+    - cron: '15 3 * * *'  # every day at 03:15 (just wanted to avoid midnight)
+
+jobs:
+  build:
+    name: Build qbtitorrent image
+    runs-on: ubuntu-latest
+
+    # https://docs.github.com/en/actions/reference/authentication-in-a-workflow
+    permissions:
+      id-token: write
+      packages: write
+      contents: read
+
+    steps:
+      - name: Generate snapshot date
+        id: snapshot-date
+        run: |
+          echo ::set-output name=date::$(date -u +%Y%m%d)
+          echo ::set-output name=epoch::$(date -u +%s)
+        shell: bash
+
+      - uses: actions/checkout@main
+      - uses: sigstore/cosign-installer@main
+      - uses: chainguard-dev/actions/melange-build@main
+        with:
+          multi-config: "libtorrent.yaml,qt6-qttools.yaml,qbittorrent.yaml"
+          sign-with-temporary-key: true
+          empty-workspace: true
+
+      - uses: chainguard-dev/actions/apko-build@main
+        id: apko
+        with:
+          archs: x86_64
+          keyring-append: /github/workspace/melange.rsa.pub
+          tag: ghcr.io/${{ github.repository }}:latest
+          source-date-epoch: ${{ steps.snapshot-date.outputs.epoch }}
+
+      - uses: docker/login-action@bb984efc561711aaa26e433c32c3521176eae55b # v1.13.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - shell: bash
+        run: |
+          # TODO: Add attributes based on things like the commit.
+          COSIGN_EXPERIMENTAL=true cosign sign ${{ steps.apko.outputs.digest }}
+
