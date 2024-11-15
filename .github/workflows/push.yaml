@@ -33,6 +33,8 @@ jobs:
       - uses: chainguard-dev/actions/melange-keygen@main
         with:
           signing-key-path: ${{ github.workspace }}/melange.rsa
+      - run: |
+          chmod 777 ${{ github.workspace }}/melange.rsa
       - uses: chainguard-dev/actions/melange-build-pkg@main
         with:
           multi-config: "libtorrent.yaml,qt6-qttools.yaml,qbittorrent.yaml"
