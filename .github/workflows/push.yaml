@@ -35,6 +35,7 @@ jobs:
           signing-key-path: ${{ github.workspace }}/melange.rsa
       - uses: chainguard-dev/actions/melange-build-pkg@main
         with:
+          keyring-append: ${{ github.workspace }}/melange.rsa.pub
           multi-config: "libtorrent.yaml,qt6-qttools.yaml,qbittorrent.yaml"
           signing-key-path: ${{ github.workspace }}/melange.rsa
           empty-workspace: true
