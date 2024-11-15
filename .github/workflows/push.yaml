@@ -28,6 +28,7 @@ jobs:
       - uses: sigstore/cosign-installer@main
       - uses: chainguard-dev/actions/melange-build@main
         with:
+          version: 0.14.10
           multi-config: "libtorrent.yaml,qt6-qttools.yaml,qbittorrent.yaml"
           sign-with-temporary-key: true
           empty-workspace: true
