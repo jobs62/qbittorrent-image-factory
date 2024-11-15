@@ -41,22 +41,10 @@ jobs:
           empty-workspace: true
           repository-path: ${{ github.workspace }}/packages
 
-      - uses: chainguard-dev/actions/apko-build@main
-        id: apko
+      - uses: distroless/actions/apko-publish@main
         with:
           archs: x86_64
+          repository-append: ${{ github.workspace }}/packages
           keyring-append: ${{ github.workspace }}/melange.rsa.pub
           tag: ghcr.io/${{ github.repository }}:latest
           source-date-epoch: ${{ steps.snapshot-date.outputs.epoch }}
-
-      - uses: docker/login-action@bb984efc561711aaa26e433c32c3521176eae55b # v1.13.0
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - shell: bash
-        run: |
-          # TODO: Add attributes based on things like the commit.
-          COSIGN_EXPERIMENTAL=true cosign sign ${{ steps.apko.outputs.digest }}
-
